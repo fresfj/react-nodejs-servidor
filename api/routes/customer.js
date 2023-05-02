@@ -12,16 +12,16 @@ module.exports = app => {
 const controller = app.controllers.customer;
 
 app.get('/', (req, res) => {
-  axios.get('https://sandbox.asaas.com/api/v3/customers?email=marcelo.almeida@gmail.com')
-  .then(res => {
-    const headerDate = res.headers && res.headers.date ? res.headers.date : 'no response date';
-    console.log('Status Code:', res.status);
-    console.log('Date in Response header:', headerDate);
+  // axios.get('https://sandbox.asaas.com/api/v3/customers?email=marcelo.almeida@gmail.com')
+  // .then(res => {
+  //   const headerDate = res.headers && res.headers.date ? res.headers.date : 'no response date';
+  //   console.log('Status Code:', res.status);
+  //   console.log('Date in Response header:', headerDate);
 
-  })
-  .catch(err => {
-    console.log('Error: ', err.message);
-  });
+  // })
+  // .catch(err => {
+  //   console.log('Error: ', err.message);
+  // });
   res.send('ok')
 })
   
@@ -45,7 +45,11 @@ app.post('/customers', (req, res) => {
         const resp = await axios.get(`https://sandbox.asaas.com/api/v3/customers?email=${req.query.email}&cpfCnpj=${req.query.cpfCnpj}`);
         const headerDate = resp.headers && resp.headers.date ? resp.headers.date : 'no response date';
         console.log(headerDate)
-        res.status(200).json(resp.data.data[0]);
+        if (resp.data.data[0] !== undefined){
+          res.status(200).json(resp.data.data[0]);
+        }else {
+          res.status(404).json('not found');
+        }
       } catch (err) {
         console.error(err);
         res.status(401).json(err);
