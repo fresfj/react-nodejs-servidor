@@ -1,4 +1,5 @@
 const axios = require('axios');
+const wbm = require('wbm');
 
 axios.defaults.headers = {
   'Content-Type': 'application/json',
@@ -22,8 +23,14 @@ app.get('/', (req, res) => {
   // .catch(err => {
   //   console.log('Error: ', err.message);
   // });
-  res.send('ok')
-})
+  wbm.start().then(async () => {
+    const phones = ['5541999601055'];
+    const message = 'Good Morning.';
+    await wbm.send(phones, message);
+    await wbm.end();
+  }).catch(err => console.log(err));
+    res.send('ok')
+  })
   
 app.post('/customers', (req, res) => {
   const sendRequest = async (data) => {
