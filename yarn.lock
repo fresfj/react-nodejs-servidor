@@ -2829,7 +2829,7 @@ puppeteer-extra@^3.3.6:
     debug "^4.1.1"
     deepmerge "^4.2.2"
 
-puppeteer@^20.0.0:
+puppeteer@^20.0.0, puppeteer@^20.2.1:
   version "20.2.1"
   resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-20.2.1.tgz#e68d92731a5edae90620ad6209292f1c377eef3b"
   integrity sha512-XWHlNCJf1u+i5AzakXj1PlNOTYcFcAwAunQj/urFKzKaZ7WTChlAo710W+TlEE2SJKshEZTwilMDDkVvwadLTQ==
