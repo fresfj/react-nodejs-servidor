@@ -1,6 +1,7 @@
 const axios = require('axios');
 const venom = require('venom-bot');
 let clientReq; 
+
 axios.defaults.headers = {
   'Content-Type': 'application/json',
   'Accept': 'application/json',
@@ -11,9 +12,6 @@ axios.defaults.headers = {
 
 module.exports = app => {
 const controller = app.controllers.customer;
-
-
-  
 
 app.get('/', (req, res) => {
   // axios.get('https://sandbox.asaas.com/api/v3/customers?email=marcelo.almeida@gmail.com')
