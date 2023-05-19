@@ -1,6 +1,6 @@
 const axios = require('axios');
-const wbm = require('wbm');
-
+const venom = require('venom-bot');
+let clientReq; 
 axios.defaults.headers = {
   'Content-Type': 'application/json',
   'Accept': 'application/json',
@@ -12,25 +12,73 @@ axios.defaults.headers = {
 module.exports = app => {
 const controller = app.controllers.customer;
 
+
+  
+
 app.get('/', (req, res) => {
   // axios.get('https://sandbox.asaas.com/api/v3/customers?email=marcelo.almeida@gmail.com')
   // .then(res => {
   //   const headerDate = res.headers && res.headers.date ? res.headers.date : 'no response date';
   //   console.log('Status Code:', res.status);
   //   console.log('Date in Response header:', headerDate);
-
   // })
   // .catch(err => {
   //   console.log('Error: ', err.message);
   // });
-  wbm.start().then(async () => {
-    const phones = ['5541999601055'];
-    const message = 'Good Morning.';
-    await wbm.send(phones, message);
-    await wbm.end();
-  }).catch(err => console.log(err));
-    res.send('ok')
-  })
+  
+  res.status(200).json('API OK');
+})
+
+app.post('/sender', async (req, res) => {
+  const { phone, message } = req.body
+  
+  if (!phone && !message) { res.status(400) }
+
+  if (clientReq) {
+    send(clientReq)
+    res.status(200)
+  } else {
+    venom
+      .create(
+        'ws-sender',
+        (base64Qr, asciiQR, attempts, urlCode) => {
+          console.log(asciiQR); // Optional to log the QR in the terminal
+          res.status(200).json({base64Qr, asciiQR, attempts, urlCode})
+          var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+            response = {};
+    
+          if (matches.length !== 3) {
+            return new Error('Invalid input string');
+          }
+          response.type = matches[1];
+          response.data = new Buffer.from(matches[2], 'base64');
+          
+          var imageBuffer = response;
+          require('fs').writeFile(
+            'out.png',
+            imageBuffer['data'],
+            'binary',
+            function (err) {
+              if (err != null) {
+                console.log(err);
+              }
+            }
+          );
+        },
+        undefined,
+        { logQR: false }
+      )
+      .then((client) => { clientReq = client; send(client); })
+      .catch((erro) => { res.status(500).json(erro) })
+  }
+
+  async function send(client) {
+    await client
+    .sendText(`${phone}@c.us`, message)
+    .then((result) => { res.status(200).json(result) } )
+    .catch((erro) => { res.status(500).json('Error when sending: \n'+ erro) })
+  }
+})
   
 app.post('/customers', (req, res) => {
   const sendRequest = async (data) => {

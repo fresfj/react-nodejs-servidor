@@ -21,6 +21,7 @@
     "nodemon": "^2.0.22",
     "request": "^2.88.2",
     "uuid": "^9.0.0",
-    "wbm": "^1.1.16"
-  }
+    "venom-bot": "^5.0.1"
+  },
+  "devDependencies": {}
 }
