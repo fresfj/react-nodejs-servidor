@@ -2,7 +2,7 @@
   "name": "asaas",
   "version": "1.2.0",
   "engines": {
-    "node": ">=14 <19"
+    "node": "17.x"
   },
   "description": "",
   "main": "index.js",
