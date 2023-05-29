@@ -27,6 +27,12 @@ app.get('/', (req, res) => {
   res.status(200).json('API OK');
 })
 
+app.post('/notification', (req, res) => {
+  const { title, description } = req.body
+  if (!description && !title) { res.status(400) }
+  res.status(201);
+})
+  
 app.post('/sender', async (req, res) => {
   const { phone, message } = req.body
   
