@@ -1,5 +1,6 @@
 const axios = require('axios');
 const venom = require('venom-bot');
+const { db, timestamp} = require('../../firebase')
 let clientReq; 
 
 axios.defaults.headers = {
@@ -27,10 +28,23 @@ app.get('/', (req, res) => {
   res.status(200).json('API OK');
 })
 
-app.post('/notification', (req, res) => {
+app.post('/notification', async (req, res) => {
   const { title, description } = req.body
   if (!description && !title) { res.status(400) }
-  res.status(201);
+
+  const notificationRef = db.collection('notifications')
+  await notificationRef.add({
+    title,
+    description,
+    createdAt: timestamp
+  }).then((docRef) => {
+      console.log("Document written with ID: ", docRef.id);
+      res.status(201).json(docRef.id);
+  })
+  .catch((error) => {
+    console.error("Error adding document: ", error);
+    res.status(400).json(error);
+  })
 })
   
 app.post('/sender', async (req, res) => {
