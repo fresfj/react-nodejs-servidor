@@ -47,7 +47,7 @@ module.exports = app => {
       .add({
         title,
         description,
-        createdAt: timestamp
+        createdAt: new date()
       })
       .then(docRef => {
         console.log('Document written with ID: ', docRef.id)
@@ -67,8 +67,15 @@ module.exports = app => {
     }
 
     if (clientReq) {
-      send(clientReq)
-      res.status(200)
+      clientReq
+        .sendText(`${phone}@c.us`, message)
+        .then(result => {
+          console.log('Result: ', result) //retorna um objeto de successo
+        })
+        .catch(erro => {
+          console.error('Erro ao enviar mensagem: ', erro) //return um objeto de erro
+        })
+      //send(clientReq)
     } else {
       venom
         .create(
@@ -102,20 +109,42 @@ module.exports = app => {
         )
         .then(client => {
           clientReq = client
-          send(client)
+
+          client
+            .sendText(`${phone}@c.us`, message)
+            .then(result => {
+              console.log('Result: ', result) //retorna um objeto de successo
+            })
+            .catch(erro => {
+              console.error('Erro ao enviar mensagem: ', erro) //return um objeto de erro
+            })
+          //send(client)
         })
         .catch(erro => {
-          res.status(500).json(erro)
+          console.log(erro)
+          //res.status(500).json(erro)
         })
     }
 
     async function send(client) {
+      // client
+      //   .sendText(`5541999601055@c.us`, 'Olá! Tudo bem com você?')
+      //   .then(result => {
+      //     console.log('Result: ', result) //retorna um objeto de successo
+      //   })
+      //   .catch(erro => {
+      //     console.error('Erro ao enviar mensagem: ', erro) //return um objeto de erro
+      //   })
+      // console.log(`send`, client)
+      // console.log(`send`, phone, message)
       await client
         .sendText(`${phone}@c.us`, message)
         .then(result => {
+          console.log(`erro`, result)
           res.status(200).json(result)
         })
         .catch(erro => {
+          console.log(`erro`, erro)
           res.status(500).json('Error when sending: \n' + erro)
         })
     }

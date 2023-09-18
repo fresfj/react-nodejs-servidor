@@ -24,11 +24,10 @@
     "firebase-admin": "^11.8.0",
     "fs": "^0.0.1-security",
     "nodemon": "^2.0.22",
-    "puppeteer": "^20.2.1",
+    "puppeteer": "^20.8.2",
     "request": "^2.88.2",
     "uuid": "^9.0.0",
     "venom-bot": "^5.0.1",
     "whatsapp-web.js": "^1.21.0"
-  },
-  "devDependencies": {}
+  }
 }
