@@ -17,7 +17,7 @@ axios.defaults.headers = {
   MerchantId: '93f1086e-4725-4edd-9c4b-87f3c1ff56d1',
   MerchantKey: 'OSZJEORVIQOEDYIMAWILRZXGMIEZLJSLOXBSHOCK',
   access_token:
-    '$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAyOTg2ODA6OiRhYWNoX2I2NTJiMjY3LWExZTEtNDQ5OC1hNzU1LTJkNDNjZmMzYTliOQ=='
+    '$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAwNTM1MjM6OiRhYWNoXzlmZmRiNmNiLWNkMDMtNDVmYS05NmQ1LTYzMjFiMGUwNmY0YQ==' //'$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAyOTg2ODA6OiRhYWNoX2I2NTJiMjY3LWExZTEtNDQ5OC1hNzU1LTJkNDNjZmMzYTliOQ=='
 }
 
 module.exports = app => {
@@ -154,7 +154,7 @@ module.exports = app => {
     const sendRequest = async data => {
       try {
         const resp = await axios.post(
-          'https://asaas.com/api/v3/customers',
+          'https://sandbox.asaas.com/api/v3/customers',
           data
         )
         const headerDate =
@@ -204,14 +204,16 @@ module.exports = app => {
       //   //console.log(`error`,err);
       //   res.status(401).json(err);
       // }
-
       try {
-        const resp = await axios.post('https://asaas.com/api/v3/payments', data)
+        const resp = await axios.post(
+          'https://sandbox.asaas.com/api/v3/payments',
+          data
+        )
         const headerDate =
           resp.headers && resp.headers.date
             ? resp.headers.date
             : 'no response date'
-        console.log(headerDate)
+
         if (data.billingType === 'BOLETO' && resp.data.id) {
           barCode(resp.data.id)
         } else if (data.billingType === 'PIX' && resp.data.id) {
@@ -219,6 +221,10 @@ module.exports = app => {
         } else {
           res.status(200).json(resp.data)
         }
+
+        console.log(`headers`, axios.defaults.headers)
+        console.log(`payments`, data)
+        return true
       } catch (err) {
         console.error(err)
         res.status(401).json(err)
