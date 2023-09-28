@@ -17,137 +17,14 @@ axios.defaults.headers = {
   MerchantId: '93f1086e-4725-4edd-9c4b-87f3c1ff56d1',
   MerchantKey: 'OSZJEORVIQOEDYIMAWILRZXGMIEZLJSLOXBSHOCK',
   access_token:
-    '$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAwNTM1MjM6OiRhYWNoXzlmZmRiNmNiLWNkMDMtNDVmYS05NmQ1LTYzMjFiMGUwNmY0YQ==' //'$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAyOTg2ODA6OiRhYWNoX2I2NTJiMjY3LWExZTEtNDQ5OC1hNzU1LTJkNDNjZmMzYTliOQ=='
+    '$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAwNjYxNjc6OiRhYWNoXzhlYjIzMDY2LTZkZjktNDk1Zi04NTVkLTE4ZGM0ZDkxMWIzOA=='
 }
 
 module.exports = app => {
   const controller = app.controllers.customer
 
   app.get('/', (req, res) => {
-    // axios.get('https://asaas.com/api/v3/customers?email=marcelo.almeida@gmail.com')
-    // .then(res => {
-    //   const headerDate = res.headers && res.headers.date ? res.headers.date : 'no response date';
-    //   console.log('Status Code:', res.status);
-    //   console.log('Date in Response header:', headerDate);
-    // })
-    // .catch(err => {
-    //   console.log('Error: ', err.message);
-    // });
     res.status(200).json('API OK')
-  })
-
-  app.post('/notification', async (req, res) => {
-    const { title, description } = req.body
-    if (!description && !title) {
-      res.status(400)
-    }
-
-    const notificationRef = db.collection('notifications')
-    await notificationRef
-      .add({
-        title,
-        description,
-        createdAt: new date()
-      })
-      .then(docRef => {
-        console.log('Document written with ID: ', docRef.id)
-        res.status(201).json(docRef.id)
-      })
-      .catch(error => {
-        console.error('Error adding document: ', error)
-        res.status(400).json(error)
-      })
-  })
-
-  app.post('/sender', async (req, res) => {
-    const { phone, message } = req.body
-
-    if (!phone && !message) {
-      res.status(400)
-    }
-
-    if (clientReq) {
-      clientReq
-        .sendText(`${phone}@c.us`, message)
-        .then(result => {
-          console.log('Result: ', result) //retorna um objeto de successo
-        })
-        .catch(erro => {
-          console.error('Erro ao enviar mensagem: ', erro) //return um objeto de erro
-        })
-      //send(clientReq)
-    } else {
-      venom
-        .create(
-          'ws-sender',
-          (base64Qr, asciiQR, attempts, urlCode) => {
-            console.log(asciiQR) // Optional to log the QR in the terminal
-            res.status(200).json({ base64Qr, asciiQR, attempts, urlCode })
-            var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
-              response = {}
-
-            if (matches.length !== 3) {
-              return new Error('Invalid input string')
-            }
-            response.type = matches[1]
-            response.data = new Buffer.from(matches[2], 'base64')
-
-            var imageBuffer = response
-            require('fs').writeFile(
-              'out.png',
-              imageBuffer['data'],
-              'binary',
-              function (err) {
-                if (err != null) {
-                  console.log(err)
-                }
-              }
-            )
-          },
-          undefined,
-          { logQR: false }
-        )
-        .then(client => {
-          clientReq = client
-
-          client
-            .sendText(`${phone}@c.us`, message)
-            .then(result => {
-              console.log('Result: ', result) //retorna um objeto de successo
-            })
-            .catch(erro => {
-              console.error('Erro ao enviar mensagem: ', erro) //return um objeto de erro
-            })
-          //send(client)
-        })
-        .catch(erro => {
-          console.log(erro)
-          //res.status(500).json(erro)
-        })
-    }
-
-    async function send(client) {
-      // client
-      //   .sendText(`5541999601055@c.us`, 'Olá! Tudo bem com você?')
-      //   .then(result => {
-      //     console.log('Result: ', result) //retorna um objeto de successo
-      //   })
-      //   .catch(erro => {
-      //     console.error('Erro ao enviar mensagem: ', erro) //return um objeto de erro
-      //   })
-      // console.log(`send`, client)
-      // console.log(`send`, phone, message)
-      await client
-        .sendText(`${phone}@c.us`, message)
-        .then(result => {
-          console.log(`erro`, result)
-          res.status(200).json(result)
-        })
-        .catch(erro => {
-          console.log(`erro`, erro)
-          res.status(500).json('Error when sending: \n' + erro)
-        })
-    }
   })
 
   app.post('/customers', (req, res) => {
@@ -174,17 +51,16 @@ module.exports = app => {
     const sendRequest = async () => {
       try {
         const resp = await axios.get(
-          `https://asaas.com/api/v3/customers?email=${req.query.email}&cpfCnpj=${req.query.cpfCnpj}`
+          `https://sandbox.asaas.com/api/v3/customers?email=${req.query.email}&cpfCnpj=${req.query.cpfCnpj}`
         )
         const headerDate =
           resp.headers && resp.headers.date
             ? resp.headers.date
             : 'no response date'
-        console.log(headerDate)
         if (resp.data.data[0] !== undefined) {
           res.status(200).json(resp.data.data[0])
         } else {
-          res.status(404).json('not found')
+          res.status(404).json({ status: 404, message: 'customer not found' })
         }
       } catch (err) {
         console.error(err)
@@ -193,17 +69,26 @@ module.exports = app => {
     }
     sendRequest()
   })
+  app.post('/subscriptions', async (req, res) => {
+    try {
+      const resp = await axios.post(
+        'https://sandbox.asaas.com/api/v3/subscriptions',
+        req.body
+      )
+      const headerDate =
+        resp.headers && resp.headers.date
+          ? resp.headers.date
+          : 'no response date'
+
+      res.status(200).json(resp.data)
+      return true
+    } catch (err) {
+      console.error(err)
+      res.status(401).json(err)
+    }
+  })
   app.post('/payments', (req, res) => {
     const sendCard = async data => {
-      // try {
-      //   const resp = await axios.post('https://asaas.com/api/v3/payments', data);
-      //   const headerDate = resp.headers && resp.headers.date ? resp.headers.date : 'no response date';
-      //   console.log(headerDate)
-      //   res.status(200).json(resp.data);
-      // } catch (err) {w
-      //   //console.log(`error`,err);
-      //   res.status(401).json(err);
-      // }
       try {
         const resp = await axios.post(
           'https://sandbox.asaas.com/api/v3/payments',
@@ -233,14 +118,15 @@ module.exports = app => {
 
     const sendPayment = async data => {
       try {
-        const resp = await axios.post('https://asaas.com/api/v3/payments', data)
+        const resp = await axios.post(
+          'https://sandbox.asaas.com/api/v3/payments',
+          data
+        )
         const headerDate =
           resp.headers && resp.headers.date
             ? resp.headers.date
             : 'no response date'
-        console.log(headerDate)
-        console.log(data.billingType, resp.data)
-        //res.status(200).json(resp.data);
+
         if (data.billingType === 'BOLETO' && resp.data.id) {
           barCode(resp.data)
         }
@@ -257,7 +143,7 @@ module.exports = app => {
     const barCode = async value => {
       try {
         const resp = await axios.get(
-          `https://asaas.com/api/v3/payments/${value.id}/identificationField`
+          `https://sandbox.asaas.com/api/v3/payments/${value.id}/identificationField`
         )
         const headerDate =
           resp.headers && resp.headers.date
@@ -275,7 +161,7 @@ module.exports = app => {
     const pixQrCode = async value => {
       try {
         const resp = await axios.get(
-          `https://asaas.com/api/v3/payments/${value.id}/pixQrCode`
+          `https://sandbox.asaas.com/api/v3/payments/${value.id}/pixQrCode`
         )
         const headerDate =
           resp.headers && resp.headers.date
@@ -303,7 +189,7 @@ module.exports = app => {
   app.get('/payments', async (req, res) => {
     try {
       const resp = await axios.get(
-        `https://asaas.com/api/v3/payments/${req._parsedUrl.query}`
+        `https://sandbox.asaas.com/api/v3/payments/${req._parsedUrl.query}`
       )
       const headerDate =
         resp.headers && resp.headers.date
