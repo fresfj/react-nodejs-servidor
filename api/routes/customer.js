@@ -14,8 +14,14 @@ let clientReq
 axios.defaults.headers = {
   'Content-Type': 'application/json',
   Accept: 'application/json',
+
+  /*be6b4e58-bd05-4ad7-8f79-472be46fc617 (CIELO)
+PNBNb2EkMA1pvMivVvSe9fqwhr2djLQZAUZfueG8*/
+
   MerchantId: '93f1086e-4725-4edd-9c4b-87f3c1ff56d1',
   MerchantKey: 'OSZJEORVIQOEDYIMAWILRZXGMIEZLJSLOXBSHOCK',
+
+  AuthorizationKey: 'ow.Hklz.XY62hx6X~V9a_M97scfbM~bR',
   access_token:
     '$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAwNjYxNjc6OiRhYWNoXzhlYjIzMDY2LTZkZjktNDk1Zi04NTVkLTE4ZGM0ZDkxMWIzOA=='
 }
@@ -28,6 +34,25 @@ module.exports = app => {
   })
 
   app.post('/customers', (req, res) => {
+    const sendRequestQery = async data => {
+      try {
+        const resp = await axios.post(
+          'https://qery-epharma-interface.vercel.app/api/usuarios/checkout',
+          data
+        )
+        const headerDate =
+          resp.headers && resp.headers.date
+            ? resp.headers.date
+            : 'no response date'
+
+        res.status(resp.status).json({ ...resp.data, status: resp.status })
+        return true
+      } catch (err) {
+        console.error(err)
+        res.status(401).json(err)
+      }
+    }
+
     const sendRequest = async data => {
       try {
         const resp = await axios.post(
@@ -38,15 +63,16 @@ module.exports = app => {
           resp.headers && resp.headers.date
             ? resp.headers.date
             : 'no response date'
-        console.log(headerDate)
         res.status(200).json(resp.data)
       } catch (err) {
         console.error(err)
         res.status(401).json(err)
       }
     }
-    sendRequest(req.body)
+    sendRequestQery(req.body)
+    //sendRequest(req.body)
   })
+
   app.get('/customers', (req, res) => {
     const sendRequest = async () => {
       try {
@@ -69,23 +95,64 @@ module.exports = app => {
     }
     sendRequest()
   })
+
   app.post('/subscriptions', async (req, res) => {
     try {
       const resp = await axios.post(
-        'https://sandbox.asaas.com/api/v3/subscriptions',
+        'https://apisandbox.cieloecommerce.cielo.com.br/1/sales',
         req.body
       )
       const headerDate =
         resp.headers && resp.headers.date
           ? resp.headers.date
           : 'no response date'
-
       res.status(200).json(resp.data)
-      return true
+      if (
+        resp.data.Payment.ReturnCode === 4 ||
+        resp.data.Payment.ReturnCode === 6
+      ) {
+        putQery()
+      }
     } catch (err) {
       console.error(err)
       res.status(401).json(err)
     }
+
+    const putQery = async data => {
+      try {
+        const resp = await axios.put(
+          'https://qery-epharma-interface.vercel.app/api/usuarios/checkout/paid_checkout',
+          {
+            cpf: '19091609036',
+            checkout_id: 'f2c1c1be-22b3-4ed2-bf99-c59d1ed79dac'
+          }
+        )
+        const headerDate =
+          resp.headers && resp.headers.date
+            ? resp.headers.date
+            : 'no response date'
+        res.status(200).json(resp.data)
+        return true
+      } catch (err) {
+        console.error(err)
+        res.status(401).json(err)
+      }
+    }
+    // try {
+    //   const resp = await axios.post(
+    //     'https://sandbox.asaas.com/api/v3/subscriptions',
+    //     req.body
+    //   )
+    //   const headerDate =
+    //     resp.headers && resp.headers.date
+    //       ? resp.headers.date
+    //       : 'no response date'
+    //   res.status(200).json(resp.data)
+    //   return true
+    // } catch (err) {
+    //   console.error(err)
+    //   res.status(401).json(err)
+    // }
   })
   app.post('/payments', (req, res) => {
     const sendCard = async data => {
