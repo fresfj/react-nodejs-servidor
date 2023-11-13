@@ -100,7 +100,22 @@ module.exports = app => {
     try {
       const resp = await axios.post(
         'https://apisandbox.cieloecommerce.cielo.com.br/1/sales',
-        req.body
+        {
+          MerchantOrderId: '2014111703',
+          Payment: {
+            Type: 'CreditCard',
+            Amount: 15700,
+            Installments: 1,
+            SoftDescriptor: '123456789ABCD',
+            CreditCard: {
+              CardNumber: '5551870000000181',
+              Holder: 'Teste Holder',
+              ExpirationDate: '12/2032',
+              SecurityCode: '123',
+              Brand: 'Visa'
+            }
+          }
+        }
       )
       const headerDate =
         resp.headers && resp.headers.date
@@ -108,36 +123,24 @@ module.exports = app => {
           : 'no response date'
       res.status(200).json(resp.data)
       if (
-        resp.data.Payment.ReturnCode === 4 ||
-        resp.data.Payment.ReturnCode === 6
+        resp.data.Payment.ReturnCode === '4' ||
+        resp.data.Payment.ReturnCode === '6'
       ) {
-        putQery()
+        await axios.put(
+          'https://qery-epharma-interface.vercel.app/api/usuarios/checkout/paid_checkout',
+          {
+            cpf: req.body.cpfCnpj,
+            checkout_id: req.body.customer,
+            payment_id: resp.data.Payment.PaymentId,
+            adquirente: 'cielo'
+          }
+        )
       }
     } catch (err) {
       console.error(err)
       res.status(401).json(err)
     }
 
-    const putQery = async data => {
-      try {
-        const resp = await axios.put(
-          'https://qery-epharma-interface.vercel.app/api/usuarios/checkout/paid_checkout',
-          {
-            cpf: '19091609036',
-            checkout_id: 'f2c1c1be-22b3-4ed2-bf99-c59d1ed79dac'
-          }
-        )
-        const headerDate =
-          resp.headers && resp.headers.date
-            ? resp.headers.date
-            : 'no response date'
-        res.status(200).json(resp.data)
-        return true
-      } catch (err) {
-        console.error(err)
-        res.status(401).json(err)
-      }
-    }
     // try {
     //   const resp = await axios.post(
     //     'https://sandbox.asaas.com/api/v3/subscriptions',
@@ -154,6 +157,7 @@ module.exports = app => {
     //   res.status(401).json(err)
     // }
   })
+
   app.post('/payments', (req, res) => {
     const sendCard = async data => {
       try {
@@ -174,8 +178,6 @@ module.exports = app => {
           res.status(200).json(resp.data)
         }
 
-        console.log(`headers`, axios.defaults.headers)
-        console.log(`payments`, data)
         return true
       } catch (err) {
         console.error(err)
