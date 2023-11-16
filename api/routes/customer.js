@@ -93,7 +93,7 @@ module.exports = app => {
         res.status(401).json(err)
       }
     }
-    sendRequest()
+    //sendRequest()
   })
 
   app.post('/subscriptions', async (req, res) => {
