@@ -104,7 +104,7 @@ module.exports = app => {
           MerchantOrderId: '2014111703',
           Payment: {
             Type: 'CreditCard',
-            Amount: 15700,
+            Amount: 29.9,
             Installments: 1,
             SoftDescriptor: '123456789ABCD',
             CreditCard: {
@@ -124,7 +124,8 @@ module.exports = app => {
       res.status(200).json(resp.data)
       if (
         resp.data.Payment.ReturnCode === '4' ||
-        resp.data.Payment.ReturnCode === '6'
+        resp.data.Payment.ReturnCode === '6' ||
+        resp.data.Payment.ReturnCode === '00'
       ) {
         await axios.put(
           'https://qery-epharma-interface.vercel.app/api/usuarios/checkout/paid_checkout',
