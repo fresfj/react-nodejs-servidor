@@ -104,19 +104,20 @@ module.exports = app => {
           MerchantOrderId: '2014111703',
           Payment: {
             Type: 'CreditCard',
-            Amount: 29.9,
+            Amount: req.body.Payment.Amount,
             Installments: 1,
             SoftDescriptor: '123456789ABCD',
             CreditCard: {
-              CardNumber: '5551870000000181',
-              Holder: 'Teste Holder',
-              ExpirationDate: '12/2032',
-              SecurityCode: '123',
-              Brand: 'Visa'
+              CardNumber: req.body.Payment.CreditCard.CardNumber,
+              Holder: req.body.Payment.CreditCard.Holder,
+              ExpirationDate: req.body.Payment.CreditCard.ExpirationDate,
+              SecurityCode: req.body.Payment.CreditCard.SecurityCode,
+              Brand: eq.body.Payment.CreditCard.Brand
             }
           }
         }
       )
+
       const headerDate =
         resp.headers && resp.headers.date
           ? resp.headers.date
